@@ -28,12 +28,12 @@ class QuotePlugin
 
 	def sayquote(m, quote)
 		output = "#{quote.quote} (added by #{quote.user})"
-		m.channel.notice output		
+		m.channel? ? m.channel.notice(output) : m.reply(output)
 	end
 
 	def addquote(m, quote)
 		new_quote = Quote.create(quote: quote, user: m.user.nick, created: Time.now)
-		m.channel.notice "Added quote with ID #{new_quote.id}"
+		m.channel? ? m.channel.notice("Added quote with ID #{new_quote.id}") : m.reply("Added quote with ID #{new_quote.id}")
 	end
 
 	def searchquote(m, search)
