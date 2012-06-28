@@ -39,7 +39,7 @@ class QuotePlugin
 	def searchquote(m, search)
 		quotes = Quote.where(:quote => /.*#{search}.*/i)
 		quote = quotes.skip(rand(quotes.count)).limit(1).first
-		sayquote m, quote
+		sayquote m, quote unless quote.nil?
 	end
 end
 
