@@ -18,21 +18,28 @@ class QuotePlugin
 	listen_to :join, :method => :joined
 
 	def joined(m)
-		#m.reply "#{m.user} joined", false unless m.user.nick == bot.nick
+		searchquote m, m.user.nick unless m.user.nick == bot.nick
 	end
 
 	def randomquote(m)
 		quote = Quote.skip(rand(Quote.count)).limit(1).first
-		m.reply(quote.quote || "No quotes added yet - go on, be the first", false)
+		sayquote m, quote
+	end
+
+	def sayquote(m, quote)
+		output = "#{quote.quote} (added by #{quote.user})"
+		m.channel.notice output		
 	end
 
 	def addquote(m, quote)
-		new_quote = Quote.create(quote: quote)
-		m.reply "Added quote with ID #{new_quote.id}", false
+		new_quote = Quote.create(quote: quote, user: m.user.nick, created: Time.now)
+		m.channel.notice "Added quote with ID #{new_quote.id}"
 	end
 
 	def searchquote(m, search)
-		#m.reply "Will search for '#{search}'", false
+		quotes = Quote.where(:quote => /.*#{search}.*/i)
+		quote = quotes.skip(rand(quotes.count)).limit(1).first
+		sayquote m, quote
 	end
 end
 
