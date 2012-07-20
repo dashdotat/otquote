@@ -51,9 +51,27 @@ class UrbanDictionary
 	def lookup(m, word)
 		url = "http://www.urbandictionary.com/define.php?term=#{CGI.escape(word)}"
 		debug "URL: #{url}"
-		definition = CGI.unescape_html(Nokogiri::HTML(open(url)).at("div.definition").text.gsub(/\s+/,' ')) rescue nil
-		debug "Definition: #{definition}"
-		m.reply(definition || "No results found", true)
+		output = ""
+		doc = Nokogiri::HTML(open(url))
+		if doc.css('div.definition').count == 0
+			output = "No results found"
+		elsif doc.css('div.definition').count == 1
+			output = doc.css('div.definition').first.text
+		else
+			if doc.css('div.definition').count == 2
+				(1..2).each do |i|
+					output += i.to_s + ": " + doc.css('div.definition')[i-1].text + " "
+				end
+			else
+				(1..3).each do |i|
+					output += i.to_s + ": " + doc.css('div.definition')[i-1].text + " "
+				end
+			end
+		end
+		output = CGI.unescape_html(output.gsub(/\s+/, ' '))
+		#definition = CGI.unescape_html(Nokogiri::HTML(open(url)).at("div.definition").text.gsub(/\s+/,' ')) rescue nil
+		debug "Definition: #{output}"
+		m.reply(output || "No results found", true)
 	end
 end
 
