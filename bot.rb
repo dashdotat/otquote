@@ -18,7 +18,11 @@ class QuotePlugin
 	listen_to :join, :method => :joined
 
 	def joined(m)
-		searchquote m, m.user.nick unless m.user.nick == bot.nick
+		if m.user.nick != bot.nick
+			quotes = Quote.where(:quote => /<.?#{m.user.nick}>/i)
+			quote = quotes.skip(rand(quotes.count)).limit(1).first
+			sayquote m, quote unless quote.nil?
+		end
 	end
 
 	def randomquote(m)
