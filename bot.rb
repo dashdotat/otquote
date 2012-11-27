@@ -19,7 +19,9 @@ class TitlePlugin
 		if m.user.nick != bot.nick
 			urls = URI.extract(m.params[1])
 			urls.uniq.each do |url|
-				get_title m, url
+				if /^(http|https):\/\//.match(url)
+					get_title m, url
+				end
 			end
 		end
 	end
@@ -111,7 +113,7 @@ bot = Cinch::Bot.new do
 		c.nick = "otquote"
 		c.realname = "OT Quotes"
 		c.user = "otquote"
-		c.channels = ["#ot-quote"]
+		c.channels = ["#surrey-ot"]
 		c.plugins.plugins = [UrbanDictionary,QuotePlugin,TitlePlugin]
 		c.verbose = true
 	end
