@@ -13,6 +13,16 @@ class TitlePlugin
 	include Cinch::Plugin
 
 	match /title (.+)/, :method => :get_title
+	listen_to :message, :method => :get_url
+
+	def get_url(m)
+		if m.user.nick != bot.nick
+			urls = URI.extract(m.params[1])
+			urls.uniq.each do |url|
+				get_title m, url
+			end
+		end
+	end
 
 	def get_title(m, url)
 		if /^(http|https):\/\//.match(url).nil?
