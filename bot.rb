@@ -9,6 +9,22 @@ class Quote
 	include Mongoid::Document
 end
 
+class TitlePlugin
+	include Cinch::Plugin
+
+	match /title (.+)/, :method => :get_title
+
+	def get_title(m, url)
+		if /^(http|https):\/\//.match(url).nil?
+			m.reply "#{m.user.nick}: Sorry, I only understand http/https"
+		else
+			doc = Nokogiri::HTML(open(url)) rescue nil
+			title = doc.title rescue nil
+			m.reply "#{m.user.nick}: #{url} - #{(title || 'Title not found')}"
+		end
+	end
+end
+
 class QuotePlugin
 	include Cinch::Plugin
 
@@ -86,7 +102,7 @@ bot = Cinch::Bot.new do
 		c.realname = "OT Quotes"
 		c.user = "otquote"
 		c.channels = ["#ot-quote"]
-		c.plugins.plugins = [UrbanDictionary,QuotePlugin]
+		c.plugins.plugins = [UrbanDictionary,QuotePlugin,TitlePlugin]
 		c.verbose = true
 	end
 end
