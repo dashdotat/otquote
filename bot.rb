@@ -5,6 +5,8 @@ require 'cgi'
 
 Bundler.require()
 
+$wall_count = 0
+
 class AhxcjbPlugin
   include Cinch::Plugin
 
@@ -15,6 +17,16 @@ class AhxcjbPlugin
       if m.channel.opped?(bot.nick) && m.user.nick.downcase == "ahxcjb" && Time.now.strftime("%P") == "pm"
         m.channel.kick m.user.nick, "Not in the civilised world it isn't"
       end
+    end
+
+    if m.user.nick.downcase == "ahxcjb"
+      $wall_count += 1
+      if $wall_count > 4 && m.channel.opped?(bot.nick)
+        $wall_count = 0
+        m.channel.kick m.user.nick, "Bring on the wall!"
+      end
+    else
+      $wall_count = 0
     end
   end
 end
