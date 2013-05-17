@@ -11,7 +11,7 @@ class AhxcjbPlugin
   listen_to :channel
 
   def listen(m)
-    if /morning/i =~ m.message 
+    if /^morning/i =~ m.message 
       if m.channel.opped?(bot.nick) && m.user.nick.downcase == "ahxcjb" && Time.now.strftime("%P") == "pm"
         m.channel.kick m.user.nick, "Not in the civilised world it isn't"
       end
