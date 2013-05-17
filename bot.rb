@@ -26,7 +26,7 @@ class AhxcjbPlugin
         m.channel.kick m.user.nick, "Bring on the wall!"
       end
     else
-      $wall_count = 0
+      $wall_count = 0 unless m.user.nick == bot.nick
     end
   end
 end
@@ -140,7 +140,7 @@ bot = Cinch::Bot.new do
 		c.realname = "OT Quotes"
 		c.user = "otquote"
 		c.channels = ["#ot-quote"]
-		c.plugins.plugins = [UrbanDictionary,QuotePlugin,TitlePlugin,AhxcjbPlugin]
+		c.plugins.plugins = [UrbanDictionary,QuotePlugin,AhxcjbPlugin]
 		c.verbose = true
 	end
 end
