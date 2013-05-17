@@ -33,7 +33,9 @@ class TitlePlugin
 		if m.user.nick != bot.nick
 			urls = URI.extract(m.params[1])
 			urls.uniq.each do |url|
-				get_title m, url
+				if /^(http|https):\/\//.match(url)
+					get_title m, url
+				end
 			end
 		end
 	end
