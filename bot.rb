@@ -13,9 +13,20 @@ class AhxcjbPlugin
   listen_to :channel
 
   def listen(m)
+    wall_messages = [
+      "Have a GREAT day",
+      "Bring on the wall!"
+    ]
+
+    morning_messages = [
+      "Please respect the Queens timezone",
+      "Not in the civilised world",
+      "Have a GREAT day"
+    ]
+
     if /^morning/i =~ m.message 
       if m.channel.opped?(bot.nick) && m.user.nick.downcase == "ahxcjb" && Time.now.strftime("%P") == "pm"
-        m.channel.kick m.user.nick, "Not in the civilised world it isn't"
+        m.channel.kick m.user.nick, morning_messages.sample
       end
     end
 
@@ -23,7 +34,7 @@ class AhxcjbPlugin
       $wall_count += 1
       if $wall_count > 4 && m.channel.opped?(bot.nick)
         $wall_count = 0
-        m.channel.kick m.user.nick, "Bring on the wall!"
+        m.channel.kick m.user.nick, wall_messages.sample
       end
     else
       $wall_count = 0 unless m.user.nick == bot.nick
