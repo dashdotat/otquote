@@ -5,6 +5,20 @@ require 'cgi'
 
 Bundler.require()
 
+class AhxcjbPlugin
+  include Cinch::Plugin
+
+  listen_to :channel
+
+  def listen(m)
+    if /morning/i =~ m.message 
+      if m.channel.opped?(bot.nick) && m.user.nick.downcase == "ahxcjb" && Time.now.strftime("%P") == "pm"
+        m.channel.kick m.user.nick, "Not in the civilised world it isn't"
+      end
+    end
+  end
+end
+
 class Quote
 	include Mongoid::Document
 end
@@ -112,7 +126,7 @@ bot = Cinch::Bot.new do
 		c.realname = "OT Quotes"
 		c.user = "otquote"
 		c.channels = ["#ot-quote"]
-		c.plugins.plugins = [UrbanDictionary,QuotePlugin,TitlePlugin]
+		c.plugins.plugins = [UrbanDictionary,QuotePlugin,TitlePlugin,AhxcjbPlugin]
 		c.verbose = true
 	end
 end
