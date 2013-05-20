@@ -7,6 +7,35 @@ Bundler.require()
 
 $wall_count = 0
 
+class Karma
+  include Mongoid::Document
+end
+class KarmaPlugin
+  include Cinch::Plugin
+
+  listen_to :channel
+
+  def listen(m)
+    if /\+\+/ =~ m.message || /--/ =~ m.message
+      m.message.split(" ").each do |k|
+        subject = /^([a-zA-Z0-9\.]+)(\+\+|--)$/.match(k)[1]
+        operator = /^([a-zA-Z0-9\.]+)(\+\+|--)$/.match(k)[2]
+        if operator == "++" && subject.downcase == m.user.nick.downcase
+          m.reply "#{m.user.nick}: Have some negative karma, you egotist"
+          operator = "--"
+        end
+        karma = Karma.where(:subject => subject).first
+        if karma.nil?
+          karma = Karma.new(:subject => subject, :total => 0)
+        end
+        if operator == "--" then karma['total'] -= 1 end
+        if operator == "++" then karma['total'] += 1 end
+        karma.save
+        m.reply "#{m.user.nick}: #{karma['subject']} now has #{karma['total']} points"
+      end
+    end
+  end
+end
 class AhxcjbPlugin
   include Cinch::Plugin
 
@@ -151,7 +180,7 @@ bot = Cinch::Bot.new do
 		c.realname = "OT Quotes"
 		c.user = "otquote"
 		c.channels = ["#ot-quote"]
-		c.plugins.plugins = [UrbanDictionary,QuotePlugin,AhxcjbPlugin]
+		c.plugins.plugins = [UrbanDictionary,QuotePlugin,AhxcjbPlugin,KarmaPlugin]
 		c.verbose = true
 	end
 end
