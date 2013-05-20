@@ -18,20 +18,23 @@ class KarmaPlugin
   def listen(m)
     if /\+\+/ =~ m.message || /--/ =~ m.message
       m.message.split(" ").each do |k|
-        subject = /^([a-zA-Z0-9\.]+)(\+\+|--)$/.match(k)[1]
-        operator = /^([a-zA-Z0-9\.]+)(\+\+|--)$/.match(k)[2]
-        if operator == "++" && subject.downcase == m.user.nick.downcase
-          m.reply "#{m.user.nick}: Have some negative karma, you egotist"
-          operator = "--"
+        match = /^([a-zA-Z0-9\.]+)(\+\+|--)$/.match(k)
+        unless match.nil?
+          subject = match[1]
+          operator = match[2]
+          if operator == "++" && subject.downcase == m.user.nick.downcase
+            m.reply "#{m.user.nick}: Have some negative karma, you egotist"
+            operator = "--"
+          end
+          karma = Karma.where(:subject => subject).first
+          if karma.nil?
+            karma = Karma.new(:subject => subject, :total => 0)
+          end
+          if operator == "--" then karma['total'] -= 1 end
+          if operator == "++" then karma['total'] += 1 end
+          karma.save
+          m.reply "#{m.user.nick}: #{karma['subject']} now has #{karma['total']} points"
         end
-        karma = Karma.where(:subject => subject).first
-        if karma.nil?
-          karma = Karma.new(:subject => subject, :total => 0)
-        end
-        if operator == "--" then karma['total'] -= 1 end
-        if operator == "++" then karma['total'] += 1 end
-        karma.save
-        m.reply "#{m.user.nick}: #{karma['subject']} now has #{karma['total']} points"
       end
     end
   end
